@@ -1,11 +1,21 @@
-# Bundled Mongo is optional. For Atlas / another server, set MONGODB_URI in .env and run:
-#   docker compose up -d --no-deps web
-version: "3.9"
+# Mongo đi kèm là TÙY CHỌN và mặc định KHÔNG chạy.
+#
+# Dùng Mongo ngoài (Atlas hoặc server khác) — mặc định:
+#   đặt MONGODB_URI trong .env rồi:  docker compose up -d
+#
+# Dùng Mongo đóng kèm trong file này:
+#   docker compose --profile bundled-mongo up -d
+#   (khi đó bỏ MONGODB_URI khỏi .env để lấy giá trị mặc định mongodb://mongo:27017)
+#
+# Cổng: mặc định chỉ bind 127.0.0.1 để không phơi ra internet.
+# Docker chèn iptables rule TRƯỚC ufw, nên bind 0.0.0.0 sẽ vượt qua firewall.
+# Muốn truy cập từ ngoài thì đặt reverse proxy (nginx) trước, đừng đổi BIND_ADDR.
 
 services:
   mongo:
     image: mongo:7
     restart: unless-stopped
+    profiles: ["bundled-mongo"]
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -17,17 +27,14 @@ services:
   web:
     build: .
     restart: unless-stopped
-    depends_on:
-      mongo:
-        condition: service_healthy
     environment:
-      # Override in .env for external Mongo (Atlas, VPS, …). Default = service name `mongo` in this file.
+      # Mặc định trỏ tới service `mongo` ở trên; override trong .env để dùng Atlas.
       MONGODB_URI: ${MONGODB_URI:-mongodb://mongo:27017/vps-monitoring}
       JWT_SECRET: ${JWT_SECRET:?Please set JWT_SECRET in .env}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       AGENT_OFFLINE_AFTER_SECONDS: ${AGENT_OFFLINE_AFTER_SECONDS:-60}
     ports:
-      - "${PORT:-3000}:3000"
+      - "${BIND_ADDR:-127.0.0.1}:${PORT:-3000}:3000"
 
 volumes:
   mongo_data:
