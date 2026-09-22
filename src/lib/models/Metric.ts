@@ -35,8 +35,8 @@ export interface IMetric {
 
 const MetricSchema = new Schema<IMetric>(
   {
-    agentId: { type: String, required: true, index: true },
-    ts: { type: Date, required: true, index: true },
+    agentId: { type: String, required: true },
+    ts: { type: Date, required: true, expires: 7776000 }, // 90 days TTL
     cpuPercent: { type: Number, default: 0 },
     loadAvg1: { type: Number, default: 0 },
     loadAvg5: { type: Number, default: 0 },
