@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const interval = url.searchParams.get('interval') ?? '15';
+  const interval = url.searchParams.get('interval') ?? '60';
 
   const baseUrl = env.APP_URL.replace(/\/$/, '');
 
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
 
   const rendered = template
     .replace(/__SERVER_URL__/g, baseUrl)
-    .replace(/__INTERVAL__/g, String(Math.max(5, Number(interval) || 15)));
+    .replace(/__INTERVAL__/g, String(Math.max(5, Number(interval) || 60)));
 
   return new NextResponse(rendered, {
     headers: {

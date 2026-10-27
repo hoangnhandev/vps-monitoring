@@ -6,7 +6,7 @@ import { ArrowLeft, Check, Copy, Terminal, ShieldCheck, Zap } from 'lucide-react
 import { toast } from 'sonner';
 
 export function AddServerClient({ appUrl }: { appUrl: string }) {
-  const [interval, setInterval] = useState(15);
+  const [interval, setInterval] = useState(60);
   const installUrl = `${appUrl.replace(/\/$/, '')}/api/install?interval=${interval}`;
   const command = `curl -fsSL ${installUrl} | sudo bash`;
   const [copied, setCopied] = useState(false);
@@ -73,7 +73,7 @@ export function AddServerClient({ appUrl }: { appUrl: string }) {
               className="input"
             />
             <p className="mt-2 text-xs text-ink-soft">
-              How often the agent posts metrics. 15s is a balanced default.
+              How often the agent posts metrics. 60s is a balanced default for Atlas free-tier storage.
             </p>
           </div>
           <div className="rounded-xl border border-border bg-bg-soft/50 p-4">
